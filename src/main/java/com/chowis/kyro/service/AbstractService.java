@@ -2,6 +2,7 @@ package com.chowis.kyro.service;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -34,9 +35,9 @@ public abstract class AbstractService<T, ID extends Serializable> implements ISe
 
 	@Override
 	public Collection<T> read() {
-		Page<T> page = getRepository().findAll(pageable(offSet, limit));
+		List<T> list = getRepository().findAll();
 
-		return page.getContent();
+		return list;
 	}
 
 	@Override
@@ -63,7 +64,7 @@ public abstract class AbstractService<T, ID extends Serializable> implements ISe
 	}
 
 	protected Pageable pageable(Integer offSet, Integer limit) {
-		Sort sort = new Sort(new Order(Direction.DESC, "createdDate"));
+		Sort sort = new Sort(new Order(Direction.DESC, "date_created"));
 		return new PageRequest(offSet, limit, sort);
 	}
 }

@@ -3,6 +3,7 @@ package com.chowis.kyro.model;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Date;
+import java.util.Set;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -18,7 +19,7 @@ public class Device implements Serializable {
 
 	@Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "sequency", nullable = false)
+	@Column(name = "id", nullable = false)
     private BigInteger id;
 
 	@NotNull
@@ -29,23 +30,17 @@ public class Device implements Serializable {
     @Column(name = "app_version", nullable = false)
     private String appVersion;
 
+	@Column(name="date_updated")
+	private Date dateUpdated;
+	
+    @Column(name="date_created", columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP", insertable=false, updatable=false, nullable = false)
+    private Date datecreated;
+    
     @Column(name = "deleted", columnDefinition = "tinyint(1) default 0")
     private int deleted;
     
-    @Column(name="createdDate", columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP", insertable=false, updatable=false, nullable = false)
-    private Date createdDate;
-
-//  @ManyToOne(fetch = FetchType.LAZY)
-//  @JoinColumn(name = "user_sequence")
-//  private User userSequence;
-
-	public Date getCreatedDate() {
-		return createdDate;
-	}
-
-	public void setCreatedDate(Date createdDate) {
-		this.createdDate = createdDate;
-	}
+    @OneToMany(mappedBy = "device", cascade = CascadeType.ALL)
+    private Set<Content> contents;
 
 	public BigInteger getId() {
 		return id;
@@ -71,12 +66,36 @@ public class Device implements Serializable {
 		this.appVersion = appVersion;
 	}
 
+	public Date getDateUpdated() {
+		return dateUpdated;
+	}
+
+	public void setDateUpdated(Date dateUpdated) {
+		this.dateUpdated = dateUpdated;
+	}
+
+	public Date getDatecreated() {
+		return datecreated;
+	}
+
+	public void setDatecreated(Date datecreated) {
+		this.datecreated = datecreated;
+	}
+
 	public int getDeleted() {
 		return deleted;
 	}
 
 	public void setDeleted(int deleted) {
 		this.deleted = deleted;
+	}
+	
+	public Set<Content> getContents() {
+		return contents;
+	}
+
+	public void setContents(Set<Content> contents) {
+		this.contents = contents;
 	}
 
 }
