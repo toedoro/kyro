@@ -18,9 +18,9 @@ public class RecommendedProduct implements Serializable {
 	private static final long serialVersionUID = -6020520872676517485L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "id", nullable = false)
-	private BigInteger id;
+    private BigInteger id;
 
 	@Column(name = "file_name", nullable = false)
 	private String fileName;

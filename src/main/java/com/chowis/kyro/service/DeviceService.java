@@ -25,15 +25,4 @@ public class DeviceService extends AbstractService<Device, BigInteger>{
 		return deviceRepository;
 	}
 	
-	@Override
-	public Collection<Device> read() {
-		Collection<Device> list = super.read();
-		
-		return list
-				.stream()
-				.map(device -> {
-					Hibernate.initialize(device.getContents());
-					return device;
-				}).collect(Collectors.toList());
-	}
 }

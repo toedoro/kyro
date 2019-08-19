@@ -135,12 +135,13 @@ public class RecommendedProductController {
 				.body(list);
 	}
 	
-	@PutMapping("/{id}/file")
-    public ResponseEntity<Resource> downloadFile(@PathVariable BigInteger id) {
+	@GetMapping("/{id}/file")
+    public ResponseEntity<Resource> getFileFromRecommendedProduct(@PathVariable BigInteger id) {
 		RecommendedProduct recommendedProduct = recommendedProductService.read(id);
+		String contentType = String.format("attachment; filename=\"%s\"", recommendedProduct.getFileName());
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(recommendedProduct.getFileType()))
-                .header(HttpHeaders.CONTENT_DISPOSITION, String.format("attachment; filename=\"%s\"", recommendedProduct.getFileName()))
+                .header(HttpHeaders.CONTENT_DISPOSITION, contentType)
                 .body(new ByteArrayResource(recommendedProduct.getData()));
     }
 	
@@ -149,14 +150,14 @@ public class RecommendedProductController {
 	}
 	
 	@Deprecated
-//	@PostMapping("/file")
+	@PostMapping("/file")
 	public UploadFileResponse storeFileToDisk(@RequestParam("file") MultipartFile file) throws FileStorageException {
 		return recommendedProductService.storeFileToDisk(file);
 	
 	}
 	
 	@Deprecated
-//	@PostMapping("/files")
+	@PostMapping("/files")
     public List<UploadFileResponse> storeFilesToDisk(@RequestParam("file") MultipartFile[] files) {
         return Arrays.asList(files)
                 .stream()
@@ -172,7 +173,7 @@ public class RecommendedProductController {
     }
     
     @Deprecated
-//    @GetMapping("/file/{fileName:.+}")
+    @GetMapping("/file/{fileName:.+}")
     public ResponseEntity<Resource> getFileFromDisk(@PathVariable String fileName, HttpServletRequest request) {
         Resource resource = recommendedProductService.getFileAsResourceFromDisk(fileName);
 

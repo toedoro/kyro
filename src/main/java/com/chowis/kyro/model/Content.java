@@ -17,17 +17,20 @@ import javax.persistence.Table;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name="content")
+@JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
 public class Content implements Serializable{
 	
 	private static final long serialVersionUID = -5573522053321801741L;
 
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @GeneratedValue
+	@Column(name = "id", nullable = false)
     private BigInteger id;
 
     @Column(name = "file_name", nullable = false)
@@ -45,11 +48,9 @@ public class Content implements Serializable{
     @Column(name = "deleted", columnDefinition = "tinyint(1) default 0")
     private int deleted;
     
-//    @ManyToOne
-//    @JoinColumn(name = "device_id", nullable = false)
-//    @JsonIgnore
-    @ManyToOne
-    @JoinColumn
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JsonBackReference
+    @JoinColumn(name = "device_id", nullable = false)
     private Device device;
 
 	public BigInteger getId() {

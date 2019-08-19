@@ -57,11 +57,8 @@ public class RecommendedProductService extends AbstractService<RecommendedProduc
         		throw new FileNotFoundException(message);
         	}
         	
-        	String fileUrl = ServletUriComponentsBuilder
-					.fromCurrentContextPath()
-					.path("/api/system/recommended-product/file/")
-					.path(String.valueOf(recommendedProduct.getId()))
-					.toUriString();
+        	String fileUri = String.format("/api/system/recommended-product/%s/file/", String.valueOf(recommendedProduct.getId()));
+        	String fileUrl = ServletUriComponentsBuilder.fromCurrentContextPath().path(fileUri).toUriString();
         	
             recommendedProduct.setData(file.getBytes());
             recommendedProduct.setFileType(file.getContentType());
