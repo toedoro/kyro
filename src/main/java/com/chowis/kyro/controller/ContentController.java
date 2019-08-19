@@ -2,8 +2,6 @@ package com.chowis.kyro.controller;
 
 import java.math.BigInteger;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,23 +18,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.chowis.kyro.message.KyroResponse;
-import com.chowis.kyro.model.Device;
-import com.chowis.kyro.service.DeviceService;
+import com.chowis.kyro.model.Content;
+import com.chowis.kyro.service.ContentService;
 
 @RestController
 @CrossOrigin(origins = "*")
-@RequestMapping(path = "/api/system/device", produces = { MediaType.APPLICATION_JSON_UTF8_VALUE })
-public class DeviceController {
+@RequestMapping(path = "/api/system/content", produces = { MediaType.APPLICATION_JSON_UTF8_VALUE })
+public class ContentController {
 
 	@Autowired
-	private DeviceService deviceService;
+	private ContentService contentService;
 
 	@PostMapping
-	public ResponseEntity<KyroResponse> create(@RequestBody Device device) {
+	public ResponseEntity<KyroResponse> create(@RequestBody Content content) {
 		try {
-			deviceService.create(device);
+			contentService.create(content);
 
-			String message = "Device Succesfully created!";
+			String message = "Content Succesfully created!";
 			return ResponseEntity.status(HttpStatus.CREATED).body(KyroResponse.of(message));
 		} catch (Exception ex) {
 			
@@ -45,26 +43,27 @@ public class DeviceController {
 	}
 
 	@GetMapping
-	public ResponseEntity<Collection<Device>> read() {
-		Collection<Device> devices = deviceService.read();
+	public ResponseEntity<Collection<Content>> read() {
+		Collection<Content> contents = contentService.read();
 
-		return ResponseEntity.status(HttpStatus.OK).body(devices);
+		return ResponseEntity.status(HttpStatus.OK).body(contents);
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<Device> read(@PathVariable BigInteger id) {
-		Device device = deviceService.read(id);
+	public ResponseEntity<Content> read(@PathVariable BigInteger id) {
+		Content content = contentService.read(id);
 
-		return ResponseEntity.status(HttpStatus.OK).body(device);
+		return ResponseEntity.status(HttpStatus.OK).body(content);
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<KyroResponse> update(@PathVariable BigInteger id, @RequestBody Device device) {
+	public ResponseEntity<KyroResponse> update(@PathVariable BigInteger id, @RequestBody Content content) {
 		try {
-			device.setId(id);
-			deviceService.create(device);
+			content.setId(id);
+			contentService.create(content);
+
+			String message = "Content Succesfully updated!";
 			
-			String message = "Device Succesfully updated!";
 			return ResponseEntity.status(HttpStatus.OK).body(KyroResponse.of(message));
 		} catch (Exception ex) {
 			
@@ -75,14 +74,14 @@ public class DeviceController {
 	@DeleteMapping("/{id}")
 	public ResponseEntity<KyroResponse> delete(@PathVariable BigInteger id) {
 		try {
-			deviceService.delete(id);
+			contentService.delete(id);
+			String message = "Content Succesfully deleted!";
 			
-			String message = "Device Succesfully deleted!";
 			return ResponseEntity.status(HttpStatus.OK).body(KyroResponse.of(message));
 		} catch (Exception ex) {
-			String message = String.format("Device not found %s", id);
-			KyroResponse response = new KyroResponse(message);
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+			String message = String.format("Content not found %s", id);
+			
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(KyroResponse.of(message));
 		}
 	}
 	

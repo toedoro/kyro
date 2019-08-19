@@ -30,7 +30,7 @@ public abstract class AbstractService<T, ID extends Serializable> implements ISe
 
 	@Override
 	public Page<T> read(Integer offSet, Integer limit) {
-		return getRepository().findAll(pageable(offSet, limit));
+		return getRepository().findAll(getPageable(offSet, limit));
 	}
 
 	@Override
@@ -63,8 +63,12 @@ public abstract class AbstractService<T, ID extends Serializable> implements ISe
 		}
 	}
 
-	protected Pageable pageable(Integer offSet, Integer limit) {
-		Sort sort = new Sort(new Order(Direction.DESC, "date_created"));
-		return new PageRequest(offSet, limit, sort);
+	protected Pageable getPageable(Integer offSet, Integer limit) {
+		Sort sort = new Sort(Sort.Direction.DESC, "date_created");
+		return pageable(offSet, limit, sort);
+	}
+	
+	protected Pageable pageable(Integer offSet, Integer limit, Sort sort) {
+		return PageRequest.of(offSet, limit, sort);
 	}
 }

@@ -1,8 +1,13 @@
 package com.chowis.kyro.service;
 
 import java.math.BigInteger;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import com.chowis.kyro.model.Device;
@@ -16,9 +21,19 @@ public class DeviceService extends AbstractService<Device, BigInteger>{
 	private IDeviceRepository deviceRepository;
 	
 	@Override
-	@SuppressWarnings("unchecked")
 	protected IRepository<Device, BigInteger> getRepository() {
-		return (IRepository<Device, BigInteger>) deviceRepository;
+		return deviceRepository;
 	}
 	
+	@Override
+	public Collection<Device> read() {
+		Collection<Device> list = super.read();
+		
+		return list
+				.stream()
+				.map(device -> {
+					Hibernate.initialize(device.getContents());
+					return device;
+				}).collect(Collectors.toList());
+	}
 }

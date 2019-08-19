@@ -1,6 +1,7 @@
 package com.chowis.kyro.model;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -27,7 +28,7 @@ public class Content implements Serializable{
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int id;
+    private BigInteger id;
 
     @Column(name = "file_name", nullable = false)
     private String fileName;
@@ -51,11 +52,11 @@ public class Content implements Serializable{
     @JoinColumn
     private Device device;
 
-	public int getId() {
+	public BigInteger getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(BigInteger id) {
 		this.id = id;
 	}
 

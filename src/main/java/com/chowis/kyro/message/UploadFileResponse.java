@@ -1,6 +1,6 @@
 package com.chowis.kyro.message;
 
-public class UploadFileResponse {
+public class UploadFileResponse extends KyroResponse{
 	
     private String fileName;
     private String fileDownloadUri;

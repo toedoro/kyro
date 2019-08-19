@@ -6,6 +6,10 @@ public class KyroResponse {
 
 	public KyroResponse() {
 	}
+	
+	public static KyroResponse of(String message){
+		return new KyroResponse(message);
+	}
 
 	public KyroResponse(String message) {
 		this.message = message;
