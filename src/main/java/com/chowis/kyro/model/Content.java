@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -20,6 +21,7 @@ import org.hibernate.annotations.OnDeleteAction;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name="content")
@@ -33,10 +35,13 @@ public class Content implements Serializable{
 	@Column(name = "id", nullable = false)
     private BigInteger id;
 
-    @Column(name = "file_name", nullable = false)
+    @Column(name = "file_name")
     private String fileName;
+    
+    @Column(name = "content_type", columnDefinition = "tinyint(1)")
+    private Integer contentType;
 
-    @Column(name = "version", nullable = false, unique = true)
+    @Column(name = "version")
     private int version;
 
     @Column(name="date_updated")
@@ -48,7 +53,7 @@ public class Content implements Serializable{
     @Column(name = "deleted", columnDefinition = "tinyint(1) default 0")
     private int deleted;
     
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(optional = false)
     @JsonBackReference
     @JoinColumn(name = "device_id", nullable = false)
     private Device device;
@@ -67,6 +72,14 @@ public class Content implements Serializable{
 
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
+	}
+	
+	public Integer getContentType() {
+		return contentType;
+	}
+
+	public void setContentType(Integer contentType) {
+		this.contentType = contentType;
 	}
 
 	public int getVersion() {

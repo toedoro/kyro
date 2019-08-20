@@ -12,6 +12,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.chowis.kyro.exception.ResourceNotFoundException;
 import com.chowis.kyro.repository.IRepository;
 
 @Transactional
@@ -42,7 +43,9 @@ public abstract class AbstractService<T, ID extends Serializable> implements ISe
 
 	@Override
 	public T read(ID id) {
-		return getRepository().getOne(id);
+		return getRepository()
+					.findById(id)
+					.orElseThrow(() -> new ResourceNotFoundException(String.format("Resource not found %s", id)));
 	}
 
 	@Override

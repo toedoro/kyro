@@ -12,10 +12,12 @@ import com.chowis.kyro.config.FileStorageProperties;
 import com.chowis.kyro.exception.FileNotFoundException;
 import com.chowis.kyro.exception.FileStorageException;
 import com.chowis.kyro.message.UploadFileResponse;
+import com.chowis.kyro.model.Content;
 import com.chowis.kyro.model.Device;
 import com.chowis.kyro.model.RecommendedProduct;
 import com.chowis.kyro.repository.IRecommendedProductRepository;
 import com.chowis.kyro.repository.IRepository;
+import com.chowis.kyro.util.DateUtil;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -24,6 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Date;
 
 @Service
 public class RecommendedProductService extends AbstractService<RecommendedProduct, BigInteger> {
@@ -48,61 +51,40 @@ public class RecommendedProductService extends AbstractService<RecommendedProduc
 					ex);
 		}
 	}
-
-	public UploadFileResponse updateWithFile(BigInteger id, MultipartFile file) throws FileStorageException {
-    	RecommendedProduct recommendedProduct = super.read(id);
-        try {
-        	if(recommendedProduct == null){
-        		String message = String.format("File not found! %s", id);
-        		throw new FileNotFoundException(message);
-        	}
-        	
-        	String fileUri = String.format("/api/system/recommended-product/%s/file/", String.valueOf(recommendedProduct.getId()));
-        	String fileUrl = ServletUriComponentsBuilder.fromCurrentContextPath().path(fileUri).toUriString();
-        	
-            recommendedProduct.setData(file.getBytes());
-            recommendedProduct.setFileType(file.getContentType());
-            recommendedProduct.setFileUrl(fileUrl);
-            super.update(recommendedProduct);
-            
-            return new UploadFileResponse(recommendedProduct.getFileName(), fileUrl, file.getContentType(), file.getSize());
-        } catch (IOException ex) {
-        	String message = String.format("Could not store file %s. Please try again!", id);
-            throw new FileStorageException(message, ex);
-        }
-    }
-
-	@Deprecated
-	public UploadFileResponse storeFileToDisk(MultipartFile file) throws FileStorageException {
-		String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+	
+	public UploadFileResponse updateRecommendedProductWithFile(BigInteger id, MultipartFile file) throws FileStorageException {
+		RecommendedProduct recommendedProduct = super.read(id);
+		String rawFileName = StringUtils.cleanPath(file.getOriginalFilename());
 		try {
-			if (fileName.contains("..")) {
-				throw new FileStorageException("Sorry! Filename contains invalid path sequence " + fileName);
+			if (rawFileName.contains("..")) {
+				throw new FileStorageException(String.format("Sorry! Filename contains invalid path sequence %s", rawFileName));
 			}
+			
+			System.out.println("file.getContentType() " + file.getContentType());
+			String date = DateUtil.formatDate(new Date(), "YYYYMMddhhmmss");
+			String fileName = String.format("%s_rp_%s_%s", "getUser()", date, rawFileName);
+			recommendedProduct.setFileName(fileName);
+			recommendedProduct.setContentType(0);
 
-			Path targetLocation = this.fileStorageLocation.resolve(fileName);
+			Path targetLocation = fileStorageLocation.resolve(fileName);
 
 			Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-			String fileDownloadUri = ServletUriComponentsBuilder
-					.fromCurrentContextPath()
-					.path("/api/system/recommended-product/file/")
-					.path(fileName).toUriString();
-
-			return new UploadFileResponse(fileName, fileDownloadUri, file.getContentType(), file.getSize());
+			String fileUri = String.format("/api/system/recommended-product/%s/file/%s", recommendedProduct.getId(), fileName);
+        	String fileUrl = ServletUriComponentsBuilder.fromCurrentContextPath().path(fileUri).toUriString();
+        	
+			return new UploadFileResponse(fileName, fileUrl, file.getContentType(), file.getSize());
 		} catch (IOException ex) {
-			String message = String.format("Could not store file %s. Please try again!", fileName);
+			String message = String.format("Could not store file %s. Please try again!", rawFileName);
 			throw new FileStorageException(message, ex);
 		} catch (Exception ex) {
 			throw new IllegalArgumentException(ex.getMessage(), ex);
-
 		}
-	}
-
-	@Deprecated
-	public Resource getFileAsResourceFromDisk(String fileName) {
+    }
+	
+	public Resource getFileFromRecommendedProductAsResource(String fileName) {
 		try {
-			Path filePath = this.fileStorageLocation.resolve(fileName).normalize();
+			Path filePath = fileStorageLocation.resolve(fileName).normalize();
 			Resource resource = new UrlResource(filePath.toUri());
 			if (resource.exists()) {
 				return resource;
@@ -115,5 +97,6 @@ public class RecommendedProductService extends AbstractService<RecommendedProduc
 			throw new FileNotFoundException(message, ex);
 		}
 	}
+
 
 }

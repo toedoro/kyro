@@ -102,8 +102,10 @@ public class RecommendedProductController {
 		}
 	}
 	
+    
+
 	@PutMapping("/{id}/file")
-	public ResponseEntity<KyroResponse> updateWithFile(@PathVariable BigInteger id, @RequestParam("file") MultipartFile file) {
+	public ResponseEntity<KyroResponse> updateContentWithFile(@PathVariable BigInteger id, @RequestParam("file") MultipartFile file) {
 		try {
 			UploadFileResponse uploadFileResponse = _updateWithFile(id, file);
 			
@@ -123,8 +125,8 @@ public class RecommendedProductController {
                 .map(file -> {
 					try {
 						return _updateWithFile(id, file);
-					} catch (FileStorageException e) {
-						e.printStackTrace();
+					} catch (FileStorageException ex) {
+						logger.info(ex.getMessage());
 						return null;
 					}
 				}).filter(Objects::nonNull)
@@ -135,47 +137,13 @@ public class RecommendedProductController {
 				.body(list);
 	}
 	
-	@GetMapping("/{id}/file")
-    public ResponseEntity<Resource> getFileFromRecommendedProduct(@PathVariable BigInteger id) {
-		RecommendedProduct recommendedProduct = recommendedProductService.read(id);
-		String contentType = String.format("attachment; filename=\"%s\"", recommendedProduct.getFileName());
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(recommendedProduct.getFileType()))
-                .header(HttpHeaders.CONTENT_DISPOSITION, contentType)
-                .body(new ByteArrayResource(recommendedProduct.getData()));
-    }
-	
 	private UploadFileResponse _updateWithFile(BigInteger id, MultipartFile file) throws FileStorageException {
-		return recommendedProductService.updateWithFile(id, file);
+		return recommendedProductService.updateRecommendedProductWithFile(id, file);
 	}
 	
-	@Deprecated
-	@PostMapping("/file")
-	public UploadFileResponse storeFileToDisk(@RequestParam("file") MultipartFile file) throws FileStorageException {
-		return recommendedProductService.storeFileToDisk(file);
-	
-	}
-	
-	@Deprecated
-	@PostMapping("/files")
-    public List<UploadFileResponse> storeFilesToDisk(@RequestParam("file") MultipartFile[] files) {
-        return Arrays.asList(files)
-                .stream()
-                .map(file -> {
-					try {
-						return storeFileToDisk(file);
-					} catch (FileStorageException e) {
-						e.printStackTrace();
-						return null;
-					}
-					
-				}).filter(Objects::nonNull).collect(Collectors.toList());
-    }
-    
-    @Deprecated
-    @GetMapping("/file/{fileName:.+}")
-    public ResponseEntity<Resource> getFileFromDisk(@PathVariable String fileName, HttpServletRequest request) {
-        Resource resource = recommendedProductService.getFileAsResourceFromDisk(fileName);
+    @GetMapping("/{id}/file/{fileName:.+}")
+    public ResponseEntity<Resource> getFileFromRecommendedProductAsResource(@PathVariable BigInteger id, @PathVariable String fileName, HttpServletRequest request) {
+        Resource resource = recommendedProductService.getFileFromRecommendedProductAsResource(fileName);
 
         String contentType = null;
         try {

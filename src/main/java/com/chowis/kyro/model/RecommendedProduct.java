@@ -24,19 +24,12 @@ public class RecommendedProduct implements Serializable {
 
 	@Column(name = "file_name", nullable = false)
 	private String fileName;
+	
+	@Column(name = "content_type", columnDefinition = "tinyint(1)")
+    private int contentType;
 
 	@Column(name = "mode")
 	private int mode;
-
-	@Column(name = "file_type")
-	private String fileType;
-
-	@Column(name = "file_url")
-	private String fileUrl;
-
-	@Lob
-	@Column(name = "data")
-	private byte[] data;
 
 	@Column(name = "date_updated")
 	private Date dateUpdated;
@@ -63,36 +56,20 @@ public class RecommendedProduct implements Serializable {
 		this.fileName = fileName;
 	}
 
+	public int getContentType() {
+		return contentType;
+	}
+
+	public void setContentType(int contentType) {
+		this.contentType = contentType;
+	}
+
 	public int getMode() {
 		return mode;
 	}
 
 	public void setMode(int mode) {
 		this.mode = mode;
-	}
-
-	public String getFileType() {
-		return fileType;
-	}
-
-	public void setFileType(String fileType) {
-		this.fileType = fileType;
-	}
-
-	public String getFileUrl() {
-		return fileUrl;
-	}
-
-	public void setFileUrl(String fileUrl) {
-		this.fileUrl = fileUrl;
-	}
-
-	public byte[] getData() {
-		return data;
-	}
-
-	public void setData(byte[] data) {
-		this.data = data;
 	}
 
 	public Date getDateUpdated() {

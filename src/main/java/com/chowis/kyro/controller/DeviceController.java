@@ -32,12 +32,12 @@ public class DeviceController {
 	private DeviceService deviceService;
 
 	@PostMapping
-	public ResponseEntity<KyroResponse> create(@RequestBody Device device) {
+	public ResponseEntity<KyroResponse> create(@RequestBody Device body) {
 		try {
-			deviceService.create(device);
+			Device device = deviceService.create(body);
 
 			String message = "Device Succesfully created!";
-			return ResponseEntity.status(HttpStatus.CREATED).body(KyroResponse.of(message));
+			return ResponseEntity.status(HttpStatus.CREATED).body(KyroResponse.of(message).setId(device.getId()));
 		} catch (Exception ex) {
 			
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(KyroResponse.of(ex.getMessage()));
