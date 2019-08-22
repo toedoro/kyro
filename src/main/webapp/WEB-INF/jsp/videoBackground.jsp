@@ -25,7 +25,7 @@
             </a>
         </li>
         <li class="nav-item active">
-            <a class="nav-link" href="videoBackground">
+            <a class="nav-link" href="contents">
                 <span>Video & Background Image</span>
             </a>
         </li>
@@ -86,14 +86,10 @@
             </div>
         </div>
 
-            <%-- Button --%>
+        <%-- Button --%>
         <div class="btn-toolbar custom-group" role="toolbar">
             <div class="btn-group mr-2" role="group">
-                <a class="btn btn-primary" type="submit" href="newdevices"><i class="fas fa-plus-circle"></i> New Device</a>
-            </div>
-            <div class="btn-group mr-2" role="group">
-                <a class="btn btn-primary" type="submit" href="#" data-toggle="modal" data-target="#deleteModal"><i
-                        class="fas fa-minus-circle"></i> Delete User</a>
+                <a class="btn btn-primary" type="submit" href=contents><i class="fas fa-plus-circle"></i> Set the contents of the selected devices</a>
             </div>
         </div>
     </div>

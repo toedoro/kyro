@@ -23,6 +23,7 @@ import com.chowis.kyro.exception.FileStorageException;
 import com.chowis.kyro.exception.ResourceNotFoundException;
 import com.chowis.kyro.message.UploadFileResponse;
 import com.chowis.kyro.model.Content;
+import com.chowis.kyro.model.ContentType;
 import com.chowis.kyro.model.Device;
 import com.chowis.kyro.model.RecommendedProduct;
 import com.chowis.kyro.repository.IContentRepository;
@@ -75,11 +76,11 @@ public class ContentService extends AbstractService<Content, BigInteger> {
 				throw new FileStorageException(String.format("Sorry! Filename contains invalid path sequence %s", rawFileName));
 			}
 			
-			System.out.println("file.getContentType() " + file.getContentType());
 			String date = DateUtil.formatDate(new Date(), "YYYYMMddhhmmss");
 			String fileName = String.format("%s_%s_%s", "getUser()", date, rawFileName);
 			content.setFileName(fileName);
-			content.setContentType(0);
+			ContentType contentType = ContentType.getContentType(file.getContentType());
+			content.setContentType(contentType.getValue());
 
 			Path targetLocation = fileStorageLocation.resolve(fileName);
 

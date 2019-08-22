@@ -11,9 +11,12 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.chowis.kyro.config.FileStorageProperties;
 import com.chowis.kyro.exception.FileNotFoundException;
 import com.chowis.kyro.exception.FileStorageException;
+import com.chowis.kyro.message.KyroResponse;
 import com.chowis.kyro.message.UploadFileResponse;
 import com.chowis.kyro.model.Content;
+import com.chowis.kyro.model.ContentType;
 import com.chowis.kyro.model.Device;
+import com.chowis.kyro.model.ProductMode;
 import com.chowis.kyro.model.RecommendedProduct;
 import com.chowis.kyro.repository.IRecommendedProductRepository;
 import com.chowis.kyro.repository.IRepository;
@@ -26,7 +29,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class RecommendedProductService extends AbstractService<RecommendedProduct, BigInteger> {
@@ -52,19 +59,39 @@ public class RecommendedProductService extends AbstractService<RecommendedProduc
 		}
 	}
 	
-	public UploadFileResponse updateRecommendedProductWithFile(BigInteger id, MultipartFile file) throws FileStorageException {
-		RecommendedProduct recommendedProduct = super.read(id);
+	public List<KyroResponse> updateRecommendedProductWithFile(Map<String, Optional<MultipartFile>> files) throws FileStorageException {
+		List<KyroResponse> list = new ArrayList<>();
+		files.entrySet().stream().forEach(entry -> {
+			ProductMode productMode = ProductMode.getContentType(entry.getKey());
+			entry.getValue().ifPresent(file -> {
+				UploadFileResponse uploadFileResponse;
+				try {
+					uploadFileResponse = updateRecommendedProductWithFile(productMode, file);
+					list.add(uploadFileResponse);
+				} catch (FileStorageException e) {
+					e.printStackTrace();
+				}
+			});
+		});
+		
+		return list;
+	}
+	
+	private UploadFileResponse updateRecommendedProductWithFile(ProductMode productMode, MultipartFile file) throws FileStorageException {
 		String rawFileName = StringUtils.cleanPath(file.getOriginalFilename());
 		try {
 			if (rawFileName.contains("..")) {
 				throw new FileStorageException(String.format("Sorry! Filename contains invalid path sequence %s", rawFileName));
 			}
-			
-			System.out.println("file.getContentType() " + file.getContentType());
 			String date = DateUtil.formatDate(new Date(), "YYYYMMddhhmmss");
 			String fileName = String.format("%s_rp_%s_%s", "getUser()", date, rawFileName);
+//			ContentType contentType = ContentType.getContentType(file.getContentType());
+			
+			RecommendedProduct recommendedProduct = new RecommendedProduct();
 			recommendedProduct.setFileName(fileName);
-			recommendedProduct.setContentType(0);
+//			recommendedProduct.setContentType(contentType.getValue());
+			recommendedProduct.setMode(productMode.getValue());
+			super.create(recommendedProduct);
 
 			Path targetLocation = fileStorageLocation.resolve(fileName);
 

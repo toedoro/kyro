@@ -4,8 +4,11 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.chowis.kyro.exception.FileStorageException;
 import com.chowis.kyro.message.KyroResponse;
 import com.chowis.kyro.message.UploadFileResponse;
+import com.chowis.kyro.model.ProductMode;
 import com.chowis.kyro.model.RecommendedProduct;
 import com.chowis.kyro.service.RecommendedProductService;
 
@@ -48,12 +52,12 @@ public class RecommendedProductController {
 	private static final Logger logger = LoggerFactory.getLogger(RecommendedProductController.class);
 	
 	@PostMapping
-	public ResponseEntity<KyroResponse> create(@RequestBody RecommendedProduct recommendedProduct) {
+	public ResponseEntity<KyroResponse> create(@RequestBody RecommendedProduct body) {
 		try {
-			recommendedProductService.create(recommendedProduct);
-
+			RecommendedProduct recommendedProduct = recommendedProductService.create(body);
 			String message = "Recommended Product Succesfully created!";
-			return ResponseEntity.status(HttpStatus.CREATED).body(KyroResponse.of(message));
+			
+			return ResponseEntity.status(HttpStatus.CREATED).body(KyroResponse.of(message).setId(recommendedProduct.getId()));
 		} catch (Exception ex) {
 			
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(KyroResponse.of(ex.getMessage()));
@@ -102,47 +106,41 @@ public class RecommendedProductController {
 		}
 	}
 	
-    
-
-	@PutMapping("/{id}/file")
-	public ResponseEntity<KyroResponse> updateContentWithFile(@PathVariable BigInteger id, @RequestParam("file") MultipartFile file) {
-		try {
-			UploadFileResponse uploadFileResponse = _updateWithFile(id, file);
-			
-			return ResponseEntity
-						.status(HttpStatus.OK)
-						.body(uploadFileResponse);
-		} catch (Exception ex) {
-			
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(KyroResponse.of(ex.getMessage()));
-		}
-	}
-	
-	@PutMapping("/{id}/files")
-	public ResponseEntity<List<KyroResponse>> updateWithFiles(@PathVariable BigInteger id, @RequestParam("file") MultipartFile[] files) {
-		List<KyroResponse> list = Arrays.asList(files)
-                .stream()
-                .map(file -> {
-					try {
-						return _updateWithFile(id, file);
-					} catch (FileStorageException ex) {
-						logger.info(ex.getMessage());
-						return null;
-					}
-				}).filter(Objects::nonNull)
-                .collect(Collectors.toList());
+	@PostMapping("/files")
+	public ResponseEntity<List<KyroResponse>> updateWithFiles(
+			@RequestParam(value="oily") Optional<MultipartFile> oily,
+			@RequestParam(value="good") Optional<MultipartFile> good,
+			@RequestParam(value="dry") Optional<MultipartFile> dry,
+			@RequestParam(value="complexion") Optional<MultipartFile> complexion,
+			@RequestParam(value="wrinkles") Optional<MultipartFile> wrinkles,
+			@RequestParam(value="impurities") Optional<MultipartFile> impurities,
+			@RequestParam(value="keratin") Optional<MultipartFile> keratin,
+			@RequestParam(value="moisture") Optional<MultipartFile> moisture,
+			@RequestParam(value="pores") Optional<MultipartFile> pores,
+			@RequestParam(value="spots") Optional<MultipartFile> spots) throws FileStorageException {
+		
+		Map<String, Optional<MultipartFile>> files = new HashMap<>();
+		files.put("oily", oily);
+		files.put("good", good);
+		files.put("dry", dry);
+		files.put("complexion", complexion);
+		files.put("wrinkles", wrinkles);
+		files.put("impurities", impurities);
+		files.put("keratin", keratin);
+		files.put("moisture", moisture);
+		files.put("pores", pores);
+		files.put("spots", spots);
+		
+		List<KyroResponse> list = recommendedProductService.updateRecommendedProductWithFile(files);
 		
 		return ResponseEntity
 				.status(HttpStatus.OK)
 				.body(list);
+
 	}
 	
-	private UploadFileResponse _updateWithFile(BigInteger id, MultipartFile file) throws FileStorageException {
-		return recommendedProductService.updateRecommendedProductWithFile(id, file);
-	}
-	
-    @GetMapping("/{id}/file/{fileName:.+}")
-    public ResponseEntity<Resource> getFileFromRecommendedProductAsResource(@PathVariable BigInteger id, @PathVariable String fileName, HttpServletRequest request) {
+    @GetMapping("/file/{fileName:.+}")
+    public ResponseEntity<Resource> getFileFromRecommendedProductAsResource(@PathVariable String fileName, HttpServletRequest request) {
         Resource resource = recommendedProductService.getFileFromRecommendedProductAsResource(fileName);
 
         String contentType = null;

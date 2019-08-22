@@ -9,6 +9,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -32,6 +33,9 @@ public class Device implements Serializable {
 	@NotNull
     @Column(name = "app_version", nullable = false)
     private String appVersion;
+	
+	@Column(name="registration_date")
+	private Date registrationDate;
 
 	@Column(name="date_updated")
 	private Date dateUpdated;
@@ -68,6 +72,14 @@ public class Device implements Serializable {
 
 	public void setAppVersion(String appVersion) {
 		this.appVersion = appVersion;
+	}
+	
+	public Date getRegistrationDate() {
+		return registrationDate;
+	}
+
+	public void setRegistrationDate(Date registrationDate) {
+		this.registrationDate = registrationDate;
 	}
 
 	public Date getDateUpdated() {

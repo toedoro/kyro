@@ -15,23 +15,37 @@
 <t:wrapper>
     <!-- Sidebar -->
     <ul class="sidebar navbar-nav">
+    	<!-- 
         <li class="nav-item active">
             <a class="nav-link" href="userlist">
                 <span>Users</span>
             </a>
         </li>
+        -->
 
         <li class="nav-item">
             <a class="nav-link" href="devices">
                 <span>Devices</span>
             </a>
         </li>
-
+        <li class="nav-item">
+            <a class="nav-link" href="devices">
+                <span>Video & Background Image</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="devices">
+                <span>Recommended Product</span>
+            </a>
+        </li>
+        
+		<!--  
         <li class="nav-item">
             <a class="nav-link" href="settings">
                 <span>Settings</span>
             </a>
         </li>
+        -->
     </ul>
 
     <div id="content-wrapper">
