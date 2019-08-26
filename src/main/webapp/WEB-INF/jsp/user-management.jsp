@@ -15,13 +15,12 @@
 <t:wrapper>
     <!-- Sidebar -->
     <ul class="sidebar navbar-nav">
-    	<!-- 
         <li class="nav-item active">
-            <a class="nav-link" href="userlist">
+            <a class="nav-link" href="user-management">
                 <span>Users</span>
             </a>
         </li>
-        -->
+       
 
         <li class="nav-item">
             <a class="nav-link" href="devices">
@@ -54,7 +53,7 @@
             <!-- Breadcrumbs-->
             <ol class="breadcrumb">
                 <li class="breadcrumb-item">
-                    <a href="userlist">User List</a>
+                    <a href="user-management">User List</a>
                 </li>
 
                 <li class="breadcrumb-item active">
@@ -78,16 +77,17 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <c:forEach var="user" items="${users}">
-                            <tr>
-                                <td></td>
-                                <td>${user.full_name}</td>
-                                <td>${user.username}</td>
-                                <td>${user.store_name}</td>
-                                <td>${user.country_code}</td>
-                                <td>${user.city}</td>
-                            </tr>
-                            </c:forEach>
+	                            <c:forEach var="user" items="${users}">
+	                            <tr ondblclick="location.href='user-details/${user.sequence}'">
+	                                <td></td>
+	                                <td>${user.userName}</td>
+	                                <td>${user.userId}</td>
+	                                <td>${user.storeName}</td>
+	                                <td>${user.countryCode}</td>
+	                                <td>${user.city}</td>
+	                            </tr>
+	                            </c:forEach>
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -96,10 +96,10 @@
             <%-- Button --%>
         <div class="btn-toolbar custom-group" role="toolbar">
             <div class="btn-group mr-2" role="group">
-                <button class="btn btn-primary" type="button" onclick="location.href = 'newuser'"><i class="fas fa-plus-circle"></i> New User</button>
+                <button class="btn btn-primary" type="button" onclick="location.href = 'new-user'"><i class="fas fa-plus-circle"></i> New User</button>
             </div>
             <div class="btn-group mr-2" role="group">
-                <button id="btn_delete_user" class="btn btn-primary" type="button" data-toggle="modal" data-target="#userModal"><i class="fas fa-minus-circle"></i> Delete User</button>
+                <button id="btn_delete_user" class="btn btn-primary" type="button" data-toggle="modal" data-target="#userModal"><i class="fas fa-minus-circle"></i> Delete</button>
             </div>
         </div>
     </div>

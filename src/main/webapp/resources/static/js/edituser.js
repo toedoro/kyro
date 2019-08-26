@@ -2,70 +2,49 @@ var username = document.cookie;
 var id;
 
 $(document).ready(function () {
-    get_user_details();
+//    get_user_details();
 
     $(function () {
         $('#chkToggle1').change(function () {
             $('#console-event').html('Toggle: ' + $(this).prop('checked'));
             if ($(this).is(":checked")) {
-                disable_form();
+                disableForm();
             } else if ($(this).is(":not(:checked)")) {
-                enable_from();
+                enableForm();
             }
         })
     });
 
-    // confirm password checking
-    var password = document.getElementById("inp_password_edit"),
-        confirm_password = document.getElementById("inp_compassword_edit");
-
-    function validatePassword() {
-        if (password.value !== confirm_password.value) {
-            confirm_password.setCustomValidity("Passwords Don't Match");
-        } else {
-            confirm_password.setCustomValidity('');
-        }
-    }
-
-    password.onchange = validatePassword;
-    confirm_password.onkeyup = validatePassword;
-
-
-
 });
 
-function disable_form() {
-    $("#inp_storeName_edit").prop('disabled', true);
-    $("#inp_userName_edit").prop('disabled', true);
-    $("#inp_userID_edit").prop('disabled', true);
-    $("#inp_country_edit").prop('disabled', true);
-    $("#inp_password_edit").prop('disabled', true);
-    $("#inp_compassword_edit").prop('disabled', true);
-    $("#inp_city_edit").prop('disabled', true);
-    $("#inp_address_edit").prop('disabled', true);
-    $("#inp_email_edit").prop('disabled', true);
-    $("#inp_tel_No_edit").prop('disabled', true);
-    $("#inp_hp_No_edit").prop('disabled', true);
-    $("#inp_permission_edit").prop('disabled', true);
-    $("#inp_ManagerID_edit").prop('disabled', true);
+function disableForm() {
+    $("#storeName").prop('disabled', true);
+    $("#userName").prop('disabled', true);
+    $("#userId").prop('disabled', true);
+    $("#countryCode").prop('disabled', true);
+    $("#city").prop('disabled', true);
+    $("#address").prop('disabled', true);
+    $("#email").prop('disabled', true);
+    $("#telNo").prop('disabled', true);
+    $("#hpNo").prop('disabled', true);
+    $("#permission").prop('disabled', true);
+    $("#managerSequence").prop('disabled', true);
 
     $("#btn_save_user_edit").prop('disabled', true);
 }
 
-function enable_from() {
-    $("#inp_storeName_edit").prop('disabled', false);
-    $("#inp_userName_edit").prop('disabled', false);
-    $("#inp_userID_edit").prop('disabled', false);
-    $("#inp_country_edit").prop('disabled', false);
-    $("#inp_password_edit").prop('disabled', false);
-    $("#inp_compassword_edit").prop('disabled', false);
-    $("#inp_city_edit").prop('disabled', false);
-    $("#inp_address_edit").prop('disabled', false);
-    $("#inp_email_edit").prop('disabled', false);
-    $("#inp_tel_No_edit").prop('disabled', false);
-    $("#inp_hp_No_edit").prop('disabled', false);
-    $("#inp_permission_edit").prop('disabled', false);
-    $("#inp_ManagerID_edit").prop('disabled', false);
+function enableForm() {
+	$("#storeName").prop('disabled', false);
+    $("#userName").prop('disabled', false);
+    $("#userId").prop('disabled', false);
+    $("#countryCode").prop('disabled', false);
+    $("#city").prop('disabled', false);
+    $("#address").prop('disabled', false);
+    $("#email").prop('disabled', false);
+    $("#telNo").prop('disabled', false);
+    $("#hpNo").prop('disabled', false);
+    $("#permission").prop('disabled', false);
+    $("#managerSequence").prop('disabled', false);
 
     $("#btn_save_user_edit").prop('disabled', false);
 }
@@ -119,47 +98,37 @@ function get_user_details() {
     }
 }
 
-// Form submit
-$("#form_editUser").submit(function (event) {
-    // Prevent the form from submitting via the browser.
+$("#formUserDetails").submit(function (event) {
     event.preventDefault();
-    updateUser();
+    update();
 });
 
-function updateUser() {
-
-    var userData = {
-        sequence    : id,
-        store_name  : $("#inp_storeName_edit").val(),
-        full_name   : $("#inp_userName_edit").val(),
-        username    : $("#inp_userID_edit").val(),
-        country_code: $("#inp_country_edit").val(),
-        password    : $("#inp_password_edit").val(),
-        city        : $("#inp_city_edit").val(),
-        address     : $("#inp_address_edit").val(),
-        email       : $("#inp_email_edit").val(),
-        tel_no      : $("#inp_tel_No_edit").val(),
-        hp_no       : $("#inp_hp_No_edit").val(),
-        permission  : $("#inp_permission_edit").val(),
-        manager_id  : $("#inp_ManagerID_edit").val()
+function update() {
+    var user = {
+        storeName  	: $("#storeName").val(),
+        userName    : $("#userName").val(),
+        userId    	: $("#userId").val(),
+        countryCode	: $("#countryCode").val(),
+        city        : $("#city").val(),
+        address     : $("#address").val(),
+        email       : $("#email").val(),
+        telNo      	: $("#telNo").val(),
+        hpNo       	: $("#hpNo").val(),
+        permission  : $("#permission").val(),
+        manager  	: { sequence: $("#managerSequence").val() }
     };
 
     $.ajax({
-        type : "POST",
+        type : "PUT",
         contentType : "application/json",
-        url: "/api/useradmin/update",
-        data : JSON.stringify(userData),
+        url: "/kyro/api/system/user",
+        data : JSON.stringify(user),
         dataType : 'json',
         success : function(result) {
-            if(result.status === "Success"){
-                $.notify("Successful update user","success");
-                disable_form();
-            }else{
-                $.notify("Failed to update user", "error");
-            }
-        },
-        error : function(e) {
-            console.log("ERROR: ", e);
+        	$.notify("User sucessfully updated!","success");
+        }, error : function(e) {
+        	$.notify("Error on updating user!", "error");
         }
     });
+
 }

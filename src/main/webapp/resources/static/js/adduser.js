@@ -1,83 +1,70 @@
 $(document).ready(function () {
-    // Form submit
-    $("#form_addUser").submit(function (event) {
-        // Prevent the form from submitting via the browser.
+    $("#formAddUser").submit(function (event) {
         event.preventDefault();
-        saveUser();
+        save();
     });
 
-    // confirm password checking
-    var password = document.getElementById("inp_password_edit"),
-        confirm_password = document.getElementById("inp_compassword");
-
+    var password = document.getElementById("password");
+    var confirmPassword = document.getElementById("confirmPassword");
+    
     function validatePassword() {
-        if (password.value !== confirm_password.value) {
-            confirm_password.setCustomValidity("Passwords Don't Match");
+        if (password.value !== confirmPassword.value) {
+        	confirmPassword.setCustomValidity("Passwords Don't Match");
         } else {
-            confirm_password.setCustomValidity('');
+        	confirmPassword.setCustomValidity('');
         }
     }
 
     password.onchange = validatePassword;
-    confirm_password.onkeyup = validatePassword;
+    confirmPassword.onkeyup = validatePassword;
 
 
-    // Save user function
-    function saveUser() {
-        var userData = {
-            store_name  : $("#inp_storeName").val(),
-            full_name   : $("#inp_userName").val(),
-            username    : $("#inp_userID").val(),
-            country_code: $("#inp_country").val(),
-            password    : $("#inp_password").val(),
-            city        : $("#inp_city").val(),
-            address     : $("#inp_address").val(),
-            email       : $("#inp_email").val(),
-            tel_no      : $("#inp_tel_No").val(),
-            hp_no       : $("#inp_hp_No").val(),
-            permission  : $("#inp_permission").val(),
-            manager_id  : $("#inp_ManagerID").val()
-        };
-
+    function save() {
+	    var user = {
+	        storeName  	: $("#storeName").val(),
+	        userName    : $("#userName").val(),
+	        userId    	: $("#userId").val(),
+	        password    : $("#password").val(),
+	        countryCode	: $("#countryCode").val(),
+	        city        : $("#city").val(),
+	        address     : $("#address").val(),
+	        email       : $("#email").val(),
+	        telNo      	: $("#telNo").val(),
+	        hpNo       	: $("#hpNo").val(),
+	        permission  : $("#permission").val(),
+	        manager  	: { sequence: $("#managerSequence").val() }
+	    };
+	    
         $.ajax({
             type : "POST",
             contentType : "application/json",
-            url: "/api/useradmin/save",
-            data : JSON.stringify(userData),
+            url: "/kyro/api/system/user",
+            data : JSON.stringify(user),
             dataType : 'json',
             success : function(result) {
-                if(result.status === "Success"){
-                    $.notify("Successful created user","success");
-                    // $("#crumbs").notify("Successful created user","success");
-                }else{
-                    $.notify("Failed to created user", "error");
-                    // $("#crumbs").notify("Failed to created user", "error");
-                }
-                console.log("Success");
-            },
-            error : function(e) {
-                console.log("ERROR: ", e);
+            	$.notify("Successful created user","success");
+            }, error : function(e) {
+            	$.notify("Failed to created user", "error");
             }
         });
 
-        // Reset FormData after Posting
-        resetData();
+        reset();
     }
 
-    function resetData(){
-        $("#inp_storeName").val("");
-        $("#inp_userName").val("");
-        $("#inp_userID").val("");
-        $("#inp_country").val("");
-        $("#inp_password").val("");
-        $("#inp_compassword").val("");
-        $("#inp_city").val("");
-        $("#inp_address").val("");
-        $("#inp_email").val("");
-        $("#inp_tel_No").val("");
-        $("#inp_hp_No").val("");
-        $("#inp_permission").val("");
-        $("#inp_ManagerID").val("");
+    function reset(){
+        $("#storeName").val("");
+        $("#userName").val("");
+        $("#userId").val("");
+        $("#country").val("");
+        $("#password").val("");
+        $("#confirmPassword").val("");
+        $("#city").val("");
+        $("#address").val("");
+        $("#email").val("");
+        $("#telNo").val("");
+        $("#hpNo").val("");
+        $("#permission").val("");
+        $("#managerId").val("");
     }
 });
 

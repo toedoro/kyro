@@ -25,7 +25,7 @@ public class Device implements Serializable {
     private BigInteger sequence;
 
     @Column(name = "optic_number")
-    private String opticNumber;
+    private String opticalNumber;
 
 	@Column(name="reg_date")
 	private Date registrationDate;
@@ -53,12 +53,12 @@ public class Device implements Serializable {
 		this.sequence = sequence;
 	}
 
-	public String getOpticNumber() {
-		return opticNumber;
+	public String getOpticalNumber() {
+		return opticalNumber;
 	}
 
-	public void setOpticNumber(String opticNumber) {
-		this.opticNumber = opticNumber;
+	public void setOpticalNumber(String opticalNumber) {
+		this.opticalNumber = opticalNumber;
 	}
 
 	public Date getRegistrationDate() {
