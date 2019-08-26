@@ -3,11 +3,10 @@ package com.chowis.kyro.model;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Date;
-import java.util.Set;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
@@ -19,33 +18,29 @@ public class RecommendedProduct implements Serializable {
 
 	@Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "id", nullable = false)
-    private BigInteger id;
+	@Column(name = "sequence", nullable = false)
+    private BigInteger sequence;
 
-	@Column(name = "file_name", nullable = false)
+	@Column(name = "file_name")
 	private String fileName;
 	
-	@Column(name = "content_type", columnDefinition = "tinyint(1)")
-    private int contentType;
-
 	@Column(name = "mode")
 	private int mode;
 
-	@Column(name = "date_updated")
-	private Date dateUpdated;
+	@Column(name = "update_date", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+	private Date updateDate;
+	
+	@ManyToOne(optional = false)
+    @JsonBackReference
+    @JoinColumn(name = "user_sequence")
+    private User user;
 
-	@Column(name = "date_created", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false, nullable = false)
-	private Date datecreated;
-
-	@Column(name = "deleted", columnDefinition = "tinyint(1) default 0")
-	private int deleted;
-
-	public BigInteger getId() {
-		return id;
+	public BigInteger getSequence() {
+		return sequence;
 	}
 
-	public void setId(BigInteger id) {
-		this.id = id;
+	public void setSequence(BigInteger sequence) {
+		this.sequence = sequence;
 	}
 
 	public String getFileName() {
@@ -56,14 +51,6 @@ public class RecommendedProduct implements Serializable {
 		this.fileName = fileName;
 	}
 
-	public int getContentType() {
-		return contentType;
-	}
-
-	public void setContentType(int contentType) {
-		this.contentType = contentType;
-	}
-
 	public int getMode() {
 		return mode;
 	}
@@ -72,28 +59,25 @@ public class RecommendedProduct implements Serializable {
 		this.mode = mode;
 	}
 
-	public Date getDateUpdated() {
-		return dateUpdated;
+	public Date getUpdateDate() {
+		return updateDate;
 	}
 
-	public void setDateUpdated(Date dateUpdated) {
-		this.dateUpdated = dateUpdated;
+	public void setUpdateDate(Date updateDate) {
+		this.updateDate = updateDate;
 	}
 
-	public Date getDatecreated() {
-		return datecreated;
+	public User getUser() {
+		return user;
 	}
 
-	public void setDatecreated(Date datecreated) {
-		this.datecreated = datecreated;
+	public void setUser(User user) {
+		this.user = user;
 	}
-
-	public int getDeleted() {
-		return deleted;
-	}
-
-	public void setDeleted(int deleted) {
-		this.deleted = deleted;
+	
+	@PreUpdate
+	void onPerist(){
+		setUpdateDate(new Date());
 	}
 
 }

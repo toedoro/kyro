@@ -4,25 +4,19 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Date;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name="content")
@@ -33,38 +27,29 @@ public class Content implements Serializable{
 
 	@Id
     @GeneratedValue
-	@Column(name = "id", nullable = false)
-    private BigInteger id;
+	@Column(name = "sequence", nullable = false)
+    private BigInteger sequence;
 
     @Column(name = "file_name")
     private String fileName;
     
-    @Column(name = "content_type", columnDefinition = "tinyint(1)")
-    private Integer contentType;
-
     @Column(name = "version")
     private int version;
 
-    @Column(name="date_updated")
-    private Date dateUpdated;
+    @Column(name = "update_date", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+	private Date updateDate;
     
-    @Column(name="date_created", columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP", insertable=false, updatable=false, nullable = false)
-    private Date dateCreated;
-    
-    @Column(name = "deleted", columnDefinition = "tinyint(1) default 0")
-    private int deleted;
-    
-    @ManyToOne(optional = false)
+    @ManyToOne
     @JsonBackReference
-    @JoinColumn(name = "device_id", nullable = false)
+    @JoinColumn(name = "device_sequence")
     private Device device;
 
-	public BigInteger getId() {
-		return id;
+	public BigInteger getSequence() {
+		return sequence;
 	}
 
-	public void setId(BigInteger id) {
-		this.id = id;
+	public void setSequence(BigInteger sequence) {
+		this.sequence = sequence;
 	}
 
 	public String getFileName() {
@@ -73,14 +58,6 @@ public class Content implements Serializable{
 
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
-	}
-	
-	public Integer getContentType() {
-		return contentType;
-	}
-
-	public void setContentType(Integer contentType) {
-		this.contentType = contentType;
 	}
 
 	public int getVersion() {
@@ -91,28 +68,12 @@ public class Content implements Serializable{
 		this.version = version;
 	}
 
-	public Date getDateUpdated() {
-		return dateUpdated;
+	public Date getUpdateDate() {
+		return updateDate;
 	}
 
-	public void setDateUpdated(Date dateUpdated) {
-		this.dateUpdated = dateUpdated;
-	}
-
-	public Date getDateCreated() {
-		return dateCreated;
-	}
-
-	public void setDateCreated(Date dateCreated) {
-		this.dateCreated = dateCreated;
-	}
-
-	public int getDeleted() {
-		return deleted;
-	}
-
-	public void setDeleted(int deleted) {
-		this.deleted = deleted;
+	public void setUpdateDate(Date updateDate) {
+		this.updateDate = updateDate;
 	}
 
 	public Device getDevice() {
@@ -122,7 +83,10 @@ public class Content implements Serializable{
 	public void setDevice(Device device) {
 		this.device = device;
 	}
-    
-    
+	
+	@PreUpdate
+	void onPerist(){
+		setUpdateDate(new Date());
+	}
 
 }

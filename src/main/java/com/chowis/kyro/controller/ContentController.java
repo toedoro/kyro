@@ -52,9 +52,9 @@ public class ContentController {
 			Content content = contentService.create(body);
 
 			String message = "Content Succesfully created!";
-			return ResponseEntity.status(HttpStatus.CREATED).body(KyroResponse.of(message).setId(content.getId()));
+			return ResponseEntity.status(HttpStatus.CREATED).body(KyroResponse.of(message).setSequence(content.getSequence()));
 		} catch (Exception ex) {
-			
+			logger.debug(ex.getMessage(), ex);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(KyroResponse.of(ex.getMessage()));
 		}
 	}
@@ -76,14 +76,14 @@ public class ContentController {
 	@PutMapping("/{id}")
 	public ResponseEntity<KyroResponse> update(@PathVariable BigInteger id, @RequestBody Content content) {
 		try {
-			content.setId(id);
+			content.setSequence(id);
 			contentService.create(content);
 
 			String message = "Content Succesfully updated!";
 			
 			return ResponseEntity.status(HttpStatus.OK).body(KyroResponse.of(message));
 		} catch (Exception ex) {
-			
+			logger.debug(ex.getMessage(), ex);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(KyroResponse.of(ex.getMessage()));
 		}
 	}
@@ -97,7 +97,7 @@ public class ContentController {
 			return ResponseEntity.status(HttpStatus.OK).body(KyroResponse.of(message));
 		} catch (Exception ex) {
 			String message = String.format("Content not found %s", id);
-			
+			logger.debug(ex.getMessage(), ex);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(KyroResponse.of(message));
 		}
 	}
@@ -111,7 +111,7 @@ public class ContentController {
 						.status(HttpStatus.OK)
 						.body(uploadFileResponse);
 		} catch (Exception ex) {
-			
+			logger.debug(ex.getMessage(), ex);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(KyroResponse.of(ex.getMessage()));
 		}
 	}
@@ -147,7 +147,7 @@ public class ContentController {
         try {
             contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
         } catch (IOException ex) {
-            logger.info("Could not determine file type.");
+            logger.debug("Could not determine file type.");
         }
         
         if(contentType == null) {

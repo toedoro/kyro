@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @JsonInclude(Include.NON_NULL)
 public class KyroResponse {
 	
-	private BigInteger id;
+	private BigInteger sequence;
 	private String message;
 
 	public KyroResponse() {
@@ -19,11 +19,11 @@ public class KyroResponse {
 	}
 
 	public BigInteger getId() {
-		return id;
+		return sequence;
 	}
 
-	public KyroResponse setId(BigInteger id) {
-		this.id = id;
+	public KyroResponse setSequence(BigInteger sequence) {
+		this.sequence = sequence;
 		return this;
 	}
 

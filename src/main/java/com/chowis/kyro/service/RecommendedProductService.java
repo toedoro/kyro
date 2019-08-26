@@ -84,12 +84,10 @@ public class RecommendedProductService extends AbstractService<RecommendedProduc
 				throw new FileStorageException(String.format("Sorry! Filename contains invalid path sequence %s", rawFileName));
 			}
 			String date = DateUtil.formatDate(new Date(), "YYYYMMddhhmmss");
-			String fileName = String.format("%s_rp_%s_%s", "getUser()", date, rawFileName);
-//			ContentType contentType = ContentType.getContentType(file.getContentType());
+			String fileName = String.format("rp_%s_%s", date, rawFileName);
 			
 			RecommendedProduct recommendedProduct = new RecommendedProduct();
 			recommendedProduct.setFileName(fileName);
-//			recommendedProduct.setContentType(contentType.getValue());
 			recommendedProduct.setMode(productMode.getValue());
 			super.create(recommendedProduct);
 
@@ -97,7 +95,7 @@ public class RecommendedProductService extends AbstractService<RecommendedProduc
 
 			Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-			String fileUri = String.format("/api/system/recommended-product/%s/file/%s", recommendedProduct.getId(), fileName);
+			String fileUri = String.format("/api/system/recommended-product/file/%s", fileName);
         	String fileUrl = ServletUriComponentsBuilder.fromCurrentContextPath().path(fileUri).toUriString();
         	
 			return new UploadFileResponse(fileName, fileUrl, file.getContentType(), file.getSize());

@@ -9,8 +9,6 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
@@ -23,47 +21,52 @@ public class Device implements Serializable {
 
 	@Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "id", nullable = false)
-    private BigInteger id;
+	@Column(name = "sequence", nullable = false)
+    private BigInteger sequence;
 
-	@NotNull
-    @Column(name = "optical_number", nullable = false)
-    private String opticalNumber;
+    @Column(name = "optic_number")
+    private String opticNumber;
 
-	@NotNull
-    @Column(name = "app_version", nullable = false)
-    private String appVersion;
-	
-	@Column(name="registration_date")
+	@Column(name="reg_date")
 	private Date registrationDate;
-
-	@Column(name="date_updated")
-	private Date dateUpdated;
 	
-    @Column(name="date_created", columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP", insertable=false, updatable=false, nullable = false)
-    private Date datecreated;
-    
-    @Column(name = "deleted", columnDefinition = "tinyint(1) default 0")
+    @Column(name = "app_version")
+    private String appVersion;
+
+    @Column(name = "del", columnDefinition = "tinyint(1) default 0")
     private int deleted;
     
     @OneToMany(mappedBy = "device", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JsonManagedReference
     private Set<Content> contents;
-
-	public BigInteger getId() {
-		return id;
+    
+    @ManyToOne(optional = false, fetch=FetchType.LAZY)
+    @JsonBackReference
+    @JoinColumn(name = "user_sequence")
+    private User user;
+    
+	public BigInteger getSequence() {
+		return sequence;
 	}
 
-	public void setId(BigInteger id) {
-		this.id = id;
+	public void setSequence(BigInteger sequence) {
+		this.sequence = sequence;
 	}
 
-	public String getOpticalNumber() {
-		return opticalNumber;
+	public String getOpticNumber() {
+		return opticNumber;
 	}
 
-	public void setOpticalNumber(String opticalNumber) {
-		this.opticalNumber = opticalNumber;
+	public void setOpticNumber(String opticNumber) {
+		this.opticNumber = opticNumber;
+	}
+
+	public Date getRegistrationDate() {
+		return registrationDate;
+	}
+
+	public void setRegistrationDate(Date registrationDate) {
+		this.registrationDate = registrationDate;
 	}
 
 	public String getAppVersion() {
@@ -73,30 +76,6 @@ public class Device implements Serializable {
 	public void setAppVersion(String appVersion) {
 		this.appVersion = appVersion;
 	}
-	
-	public Date getRegistrationDate() {
-		return registrationDate;
-	}
-
-	public void setRegistrationDate(Date registrationDate) {
-		this.registrationDate = registrationDate;
-	}
-
-	public Date getDateUpdated() {
-		return dateUpdated;
-	}
-
-	public void setDateUpdated(Date dateUpdated) {
-		this.dateUpdated = dateUpdated;
-	}
-
-	public Date getDatecreated() {
-		return datecreated;
-	}
-
-	public void setDatecreated(Date datecreated) {
-		this.datecreated = datecreated;
-	}
 
 	public int getDeleted() {
 		return deleted;
@@ -105,7 +84,7 @@ public class Device implements Serializable {
 	public void setDeleted(int deleted) {
 		this.deleted = deleted;
 	}
-	
+
 	public Set<Content> getContents() {
 		return contents;
 	}
@@ -114,5 +93,13 @@ public class Device implements Serializable {
 		this.contents = contents;
 	}
 
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+    
 }
 

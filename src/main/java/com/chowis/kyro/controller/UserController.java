@@ -20,26 +20,26 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.chowis.kyro.message.KyroResponse;
-import com.chowis.kyro.model.Device;
-import com.chowis.kyro.service.DeviceService;
+import com.chowis.kyro.model.User;
+import com.chowis.kyro.service.UserService;
 
 @RestController
 @CrossOrigin(origins = "*")
-@RequestMapping(path = "/api/system/device", produces = { MediaType.APPLICATION_JSON_UTF8_VALUE })
-public class DeviceController {
+@RequestMapping(path = "/api/system/user", produces = { MediaType.APPLICATION_JSON_UTF8_VALUE })
+public class UserController {
+
+	private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 	
-	private static final Logger logger = LoggerFactory.getLogger(DeviceController.class);
-
 	@Autowired
-	private DeviceService deviceService;
-
+	private UserService userService;
+	
 	@PostMapping
-	public ResponseEntity<KyroResponse> create(@RequestBody Device body) {
+	public ResponseEntity<KyroResponse> create(@RequestBody User body) {
 		try {
-			Device device = deviceService.create(body);
+			User user = userService.create(body);
 
-			String message = "Device Succesfully created!";
-			return ResponseEntity.status(HttpStatus.CREATED).body(KyroResponse.of(message).setSequence(device.getSequence()));
+			String message = "User Succesfully created!";
+			return ResponseEntity.status(HttpStatus.CREATED).body(KyroResponse.of(message).setSequence(user.getSequence()));
 		} catch (Exception ex) {
 			logger.debug(ex.getMessage(), ex);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(KyroResponse.of(ex.getMessage()));
@@ -47,27 +47,28 @@ public class DeviceController {
 	}
 
 	@GetMapping
-	public ResponseEntity<Collection<Device>> read() {
-		Collection<Device> devices = deviceService.read();
+	public ResponseEntity<Collection<User>> read() {
+		Collection<User> users = userService.read();
 
-		return ResponseEntity.status(HttpStatus.OK).body(devices);
+		return ResponseEntity.status(HttpStatus.OK).body(users);
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<Device> read(@PathVariable BigInteger id) {
-		Device device = deviceService.read(id);
+	public ResponseEntity<User> read(@PathVariable BigInteger id) {
+		User user = userService.read(id);
 
-		return ResponseEntity.status(HttpStatus.OK).body(device);
+		return ResponseEntity.status(HttpStatus.OK).body(user);
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<KyroResponse> update(@PathVariable BigInteger id, @RequestBody Device device) {
+	public ResponseEntity<KyroResponse> update(@PathVariable BigInteger id, @RequestBody User body) {
 		try {
-			device.setSequence(id);
-			deviceService.create(device);
+			body.setSequence(id);
+			User user = userService.create(body);
+
+			String message = "User Succesfully updated!";
 			
-			String message = "Device Succesfully updated!";
-			return ResponseEntity.status(HttpStatus.OK).body(KyroResponse.of(message));
+			return ResponseEntity.status(HttpStatus.OK).body(KyroResponse.of(message).setSequence(user.getSequence()));
 		} catch (Exception ex) {
 			logger.debug(ex.getMessage(), ex);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(KyroResponse.of(ex.getMessage()));
@@ -77,15 +78,14 @@ public class DeviceController {
 	@DeleteMapping("/{id}")
 	public ResponseEntity<KyroResponse> delete(@PathVariable BigInteger id) {
 		try {
-			deviceService.delete(id);
+			userService.delete(id);
+			String message = "User Succesfully deleted!";
 			
-			String message = "Device Succesfully deleted!";
 			return ResponseEntity.status(HttpStatus.OK).body(KyroResponse.of(message));
 		} catch (Exception ex) {
-			String message = String.format("Device not found %s", id);
-			KyroResponse response = new KyroResponse(message);
+			String message = String.format("User not found %s", id);
 			logger.debug(ex.getMessage(), ex);
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(KyroResponse.of(message));
 		}
 	}
 	

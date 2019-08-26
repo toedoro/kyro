@@ -67,7 +67,7 @@ public abstract class AbstractService<T, ID extends Serializable> implements ISe
 	}
 
 	protected Pageable getPageable(Integer offSet, Integer limit) {
-		Sort sort = new Sort(Sort.Direction.DESC, "date_created");
+		Sort sort = new Sort(Sort.Direction.DESC, "sequence");
 		return pageable(offSet, limit, sort);
 	}
 	

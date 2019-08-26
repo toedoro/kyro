@@ -57,9 +57,9 @@ public class RecommendedProductController {
 			RecommendedProduct recommendedProduct = recommendedProductService.create(body);
 			String message = "Recommended Product Succesfully created!";
 			
-			return ResponseEntity.status(HttpStatus.CREATED).body(KyroResponse.of(message).setId(recommendedProduct.getId()));
+			return ResponseEntity.status(HttpStatus.CREATED).body(KyroResponse.of(message).setSequence(recommendedProduct.getSequence()));
 		} catch (Exception ex) {
-			
+			logger.debug(ex.getMessage(), ex);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(KyroResponse.of(ex.getMessage()));
 		}
 	}
@@ -81,13 +81,13 @@ public class RecommendedProductController {
 	@PutMapping("/{id}")
 	public ResponseEntity<KyroResponse> update(@PathVariable BigInteger id, @RequestBody RecommendedProduct recommendedProduct) {
 		try {
-			recommendedProduct.setId(id);
+			recommendedProduct.setSequence(id);
 			recommendedProductService.create(recommendedProduct);
 			
 			String message = "Recommended Product Succesfully updated!";
 			return ResponseEntity.status(HttpStatus.OK).body(KyroResponse.of(message));
 		} catch (Exception ex) {
-			
+			logger.debug(ex.getMessage(), ex);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(KyroResponse.of(ex.getMessage()));
 		}
 	}
@@ -102,6 +102,7 @@ public class RecommendedProductController {
 		} catch (Exception ex) {
 			String message = String.format("Recommended Product not found %s", id);
 			KyroResponse response = new KyroResponse(message);
+			logger.debug(ex.getMessage(), ex);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		}
 	}
@@ -136,7 +137,6 @@ public class RecommendedProductController {
 		return ResponseEntity
 				.status(HttpStatus.OK)
 				.body(list);
-
 	}
 	
     @GetMapping("/file/{fileName:.+}")

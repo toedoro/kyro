@@ -36,7 +36,7 @@ public class ContentService extends AbstractService<Content, BigInteger> {
 	private Path fileStorageLocation;
 
 	@Autowired
-	private IContentRepository commentRepository;
+	private IContentRepository contentRepository;
 	
 	@Autowired
 	private DeviceService deviceService;
@@ -54,7 +54,7 @@ public class ContentService extends AbstractService<Content, BigInteger> {
 	
 	@Override
 	protected IRepository<Content, BigInteger> getRepository() {
-		return commentRepository;
+		return contentRepository;
 	}
 	
 	public Content create(BigInteger deviceId, Content content){
@@ -79,14 +79,12 @@ public class ContentService extends AbstractService<Content, BigInteger> {
 			String date = DateUtil.formatDate(new Date(), "YYYYMMddhhmmss");
 			String fileName = String.format("%s_%s_%s", "getUser()", date, rawFileName);
 			content.setFileName(fileName);
-			ContentType contentType = ContentType.getContentType(file.getContentType());
-			content.setContentType(contentType.getValue());
 
 			Path targetLocation = fileStorageLocation.resolve(fileName);
 
 			Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
-			String fileUri = String.format("/api/system/recommended-product/%s/file/%s", content.getId(), fileName);
+			String fileUri = String.format("/api/system/recommended-product/%s/file/%s", content.getSequence(), fileName);
         	String fileUrl = ServletUriComponentsBuilder.fromCurrentContextPath().path(fileUri).toUriString();
         	
 			return new UploadFileResponse(fileName, fileUrl, file.getContentType(), file.getSize());
